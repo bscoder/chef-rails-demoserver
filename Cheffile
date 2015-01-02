@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+#^syntax detection
+
+site 'https://supermarket.getchef.com/api/v1'
+
+# cookbook 'chef-client'
+
+cookbook "apt"
+cookbook 'rails_demo', :path => './rails_demo'
+cookbook 'apache2', '>= 1.0.0'
+cookbook "vim"
+cookbook "mysql"
+cookbook "build-essential"
+cookbook "git"
+cookbook "tmux"
+cookbook "swap"
+
+cookbook 'rvm', :git => 'https://github.com/fnichol/chef-rvm'
+
+cookbook 'postgresql', :github => 'hw-cookbooks/postgresql'

@@ -1,0 +1,8 @@
+{
+  "run_list": [ "rails_demo"
+
+  ],
+  "automatic": {
+    "ipaddress": "demo"
+  }
+}
