@@ -24,7 +24,8 @@ end
 bash "copy auth_key" do
   code """
 mkdir -p /home/webmaster/.ssh/
-cat /home/ubuntu/.ssh/authorized_keys > /home/webmaster/.ssh/authorized_keys &&
+(test -f /home/ubuntu/.ssh/authorized_keys && cat /home/ubuntu/.ssh/authorized_keys > /home/webmaster/.ssh/authorized_keys ||
+test -f /root/.ssh/authorized_keys && cat /root/.ssh/authorized_keys > /home/webmaster/.ssh/authorized_keys) &&
 chown -R webmaster /home/webmaster/"""
    not_if "test -f /home/webmaster/.ssh/authorized_keys"
 end
