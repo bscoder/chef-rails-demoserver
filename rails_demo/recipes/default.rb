@@ -29,20 +29,11 @@ chown -R webmaster /home/webmaster/"""
    not_if "test -f /home/webmaster/.ssh/authorized_keys"
 end
 
-
-apt_repository 'phusion' do
-  uri 'https://oss-binaries.phusionpassenger.com/apt/passenger'
-  distribution 'precise'
-  components ['main']
-  keyserver 'keyserver.ubuntu.com'
-  key '561F9B9CAC40B2F7'
+package "libapache2-mod-fcgid" do
+  action :install
 end
 
-package "libapache2-mod-passenger" do
-  action [:install, :upgrade]
-end
-
-apache_module 'passenger' do
+apache_module 'fcgid' do
   enable true
 end
 
@@ -50,10 +41,13 @@ apache_module 'vhost_alias' do
   enable true
 end
 
-package "gawk" do
+package "gawk" do ## rvm needs it 
   action :install
 end
 
+package "libfcgi-dev" do
+  action :install
+end
 
 node.set[:rvm][:gpg_key] = 'BF04FF17'
 node.set[:rvm][:installs] = {"webmaster" => true}
@@ -65,6 +59,7 @@ node.set[:rvm][:user_installs] = [
                                    default_ruby: "ruby-2.1.5"
                                   },
                                  ]
+
 
 execute 'gpg key' do
   command "`which gpg2 || which gpg` --keyserver hkp://keys.gnupg.net --recv-keys #{node['rvm']['gpg_key']}"
