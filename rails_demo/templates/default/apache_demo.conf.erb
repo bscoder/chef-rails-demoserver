@@ -1,8 +1,7 @@
 <VirtualHost *:80>
-    ServerName current.demo.bscoder.ru
-    ServerAlias *.demo.bscoder.ru
+    ServerName <%= node[:rails_demo][:demo_domain] %> 
+    ServerAlias <%= node[:rails_demo][:demo_alias] %> 
     FcgidInitialEnv RAILS_ENV production
-    FcgidInitialEnv DATABASE_PASSWORD qweasd999
     VirtualDocumentRoot /home/webmaster/www/%1/current/public/
     <Directory   /home/webmaster/www/*/current/public/>
         Allow from all

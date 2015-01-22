@@ -1,4 +1,11 @@
 {
+  "rails_demo" : {
+    "webmaster_ssh_keys":"",
+    "demo_domain": "current.demo.bscoder.ru",
+    "demo_alias": "*.demo.bscoder.ru",
+    "mysql_initial_root_password":"SimplePassword4Root",
+    "pgsql_initial_root_password":"SimplePassword4Root"
+  },
   "run_list": [ "rails_demo"
 
   ],

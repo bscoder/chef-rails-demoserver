@@ -21,13 +21,26 @@ user "webmaster" do
   action [:create, :modify]
 end
 
-bash "copy auth_key" do
-  code """
-mkdir -p /home/webmaster/.ssh/
-(test -f /home/ubuntu/.ssh/authorized_keys && cat /home/ubuntu/.ssh/authorized_keys > /home/webmaster/.ssh/authorized_keys ||
-test -f /root/.ssh/authorized_keys && cat /root/.ssh/authorized_keys > /home/webmaster/.ssh/authorized_keys) &&
-chown -R webmaster /home/webmaster/"""
-   not_if "test -f /home/webmaster/.ssh/authorized_keys"
+directory "/home/webmaster" do
+  user "webmaster"
+  group "webmaster"
+  mode "0755"
+  action :create
+end
+
+directory "/home/webmaster/.ssh/" do
+  user "webmaster"
+  group "webmaster"
+  mode "0700"
+  action :create
+end
+
+file "/home/webmaster/.ssh/authorized_keys" do 
+  content node[:rails_demo][:webmaster_ssh_keys]
+  user "webmaster"
+  group "webmaster"
+  mode "0644"
+  action :create_if_missing
 end
 
 package "libapache2-mod-fcgid" do
@@ -61,7 +74,6 @@ node.set[:rvm][:user_installs] = [
                                   },
                                  ]
 
-
 execute 'gpg key' do
   command "`which gpg2 || which gpg` --keyserver hkp://keys.gnupg.net --recv-keys #{node['rvm']['gpg_key']}"
   user "webmaster"
@@ -75,7 +87,7 @@ include_recipe "rvm::user"
 mysql_service 'default' do
   bind_address '127.0.0.1'
   port '3306'  
-  initial_root_password 'SimplePassword4Root'
+  initial_root_password node['rails_demo']['mysql_initial_root_password'] || 'SimplePassword4Root'
   action [:create, :start]
 end
 
@@ -83,8 +95,7 @@ mysql_client 'default' do
   action :create
 end
 
-
-node.set[:postgresql][:password][:postgres] = 'qweasd999'
+node.set[:postgresql][:password][:postgres] = node['rails_demo']['pgsql_initial_root_password'] || 'qweasd999'
 node.set[:postgresql][:config_pgtune][:db_type] = 'web'
 node.set[:postgresql][:config_pgtune][:max_connections] = '32'
 node.set[:postgresql][:config_pgtune][:total_memory] = '102400kB'
@@ -95,7 +106,10 @@ include_recipe "postgresql::config_initdb"
 include_recipe "postgresql::config_pgtune"
 
 
-apache_site "default"
+apache_site "default" do
+  action :disable
+end
+
 web_app "demos" do
   template 'apache_demo.conf.erb'
 end
